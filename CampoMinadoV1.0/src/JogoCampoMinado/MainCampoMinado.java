@@ -7,7 +7,8 @@ public class MainCampoMinado {
     
 	public void executaJogo(){
 		
-		ImageIcon iconJogo = new ImageIcon("src//main//java//midia//iconJogo.png");
+            ImageIcon iconJogo = new ImageIcon(getClass().getResource("/midia/iconJogo.png"));
+
 
 		//Declaração da variável para a escolha do nível do jogo.
 		String[] niveis = { "Nível Iniciante: 9x9", "Nível Intermediário: 16x16"};

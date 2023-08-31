@@ -18,6 +18,7 @@ import javax.sound.sampled.Clip;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
@@ -43,22 +44,22 @@ public class Tabuleiro extends JFrame implements ActionListener {
 	Color cinza = new Color(211, 211, 211);
 
 	// Declaração dos ícones que são usadas no jogo.
-	ImageIcon iconMina = new ImageIcon("src//main//java//midia//mina.png");
-	ImageIcon iconBandeira = new ImageIcon("src//main//java//midia//bandeira2.png");
-	ImageIcon iconBandeiraAzul = new ImageIcon("src//main//java//midia//bandeiraAzul2.png");
-	ImageIcon iconInterrogacao = new ImageIcon("src//main//java//midia//interrogacao.png");
-	ImageIcon iconRelogio = new ImageIcon("src//main//java//midia//relogio.png");
-	ImageIcon iconUm = new ImageIcon("src//main//java//midia//1.png");
-	ImageIcon iconDois = new ImageIcon("src//main//java//midia//2.png");
-	ImageIcon iconTres = new ImageIcon("src//main//java//midia//3.png");
-	ImageIcon iconQuatro = new ImageIcon("src//main//java//midia//4.png");
-	ImageIcon iconCinco = new ImageIcon("src//main//java//midia//5.png");
-	ImageIcon iconSeis = new ImageIcon("src//main//java//midia//6.png");
-	ImageIcon iconSete = new ImageIcon("src//main//java//midia//7.png");
-	ImageIcon iconOito = new ImageIcon("src//main//java//midia//8.png");
-	ImageIcon iconTrofeu = new ImageIcon("src//main//java//midia//trofeu.png");
-	ImageIcon iconExplosao = new ImageIcon("src//main//java//midia//explosao.png");
-	ImageIcon iconAjuda = new ImageIcon("src//main//java//midia//iconAjuda.png");
+	ImageIcon iconMina = new ImageIcon(getClass().getResource("/midia/mina.png"));
+	ImageIcon iconBandeira = new ImageIcon(getClass().getResource("/midia/bandeira2.png"));
+	ImageIcon iconBandeiraAzul = new ImageIcon(getClass().getResource("/midia/bandeiraAzul2.png"));
+	ImageIcon iconInterrogacao = new ImageIcon(getClass().getResource("/midia/interrogacao.png"));
+	ImageIcon iconRelogio = new ImageIcon(getClass().getResource("/midia/relogio.png"));
+	ImageIcon iconUm = new ImageIcon(getClass().getResource("/midia/1.png"));
+	ImageIcon iconDois = new ImageIcon(getClass().getResource("/midia/2.png"));
+	ImageIcon iconTres = new ImageIcon(getClass().getResource("/midia/3.png"));
+	ImageIcon iconQuatro = new ImageIcon(getClass().getResource("/midia/4.png"));
+	ImageIcon iconCinco = new ImageIcon(getClass().getResource("/midia/5.png"));
+	ImageIcon iconSeis = new ImageIcon(getClass().getResource("/midia/6.png"));
+	ImageIcon iconSete = new ImageIcon(getClass().getResource("/midia/7.png"));
+	ImageIcon iconOito = new ImageIcon(getClass().getResource("/midia/8.png"));
+	ImageIcon iconTrofeu = new ImageIcon(getClass().getResource("/midia/trofeu.png"));
+	ImageIcon iconExplosao = new ImageIcon(getClass().getResource("/midia/explosao.png"));
+	ImageIcon iconAjuda = new ImageIcon(getClass().getResource("/midia/iconAjuda.png"));
 
 	// Declaração do campo que informa a quantidade de bandeiras colocadas pelo(a)
 	// jogador(a) no tabuleiro.
@@ -473,8 +474,9 @@ public class Tabuleiro extends JFrame implements ActionListener {
 
 		try {
 			// URL do som que no caso esta no pendrive, mais ainda é uma fase de teste.
-			AudioInputStream audioInputStream = AudioSystem
-					.getAudioInputStream(new File("src//main//java//midia//" + nome + ".wav").getAbsoluteFile());
+			AudioInputStream audioInputStream;
+                    audioInputStream = AudioSystem
+                            .getAudioInputStream(new File(getClass().getResource("/midia/" + nome + ".wav").getPath()));
 			Clip clip = AudioSystem.getClip();
 			clip.open(audioInputStream);
 			clip.start();
