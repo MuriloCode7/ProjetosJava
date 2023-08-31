@@ -160,7 +160,7 @@ public class Tabuleiro extends JFrame implements ActionListener {
 
 	public void carregaCelulas() {
 		for (JButton celula : celulas) {
-			celula.setBackground(this.azulClaro);
+			celula.setBackground(Color.BLUE);
 		}
 	}
 
