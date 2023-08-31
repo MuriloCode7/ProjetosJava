@@ -86,16 +86,17 @@ public class Tabuleiro extends JFrame implements ActionListener {
 		setVisible(true);
 		getContentPane().setBackground(Color.white);
 
-		celulas = new ArrayList<JButton>();
+		this.celulas = new ArrayList<JButton>();
 	}
 
 	/**
 	 * Método que gera as células no tabuleiro respeitando as características do
 	 * nível escolhido
 	 * 
-	 * @throws InterruptedException
+	 * @throws InterruptedExceptionss
 	 */
 	public void geraCelulas() {
+            this.celulas = new ArrayList<JButton>();
 
 		for (int x = 0; x < this.tam; x++) {
 
@@ -111,6 +112,7 @@ public class Tabuleiro extends JFrame implements ActionListener {
 				celula.setFocusable(false);
 				celula.setHorizontalTextPosition(JButton.CENTER);
 				celula.setVerticalTextPosition(JButton.CENTER);
+                                celula.setRolloverEnabled(false);
 				celula.addActionListener(this::click);
 				if (x < 10 && y < 10) {
 					celula.setText("0" + x + ".0" + y + " m:X");
@@ -149,7 +151,7 @@ public class Tabuleiro extends JFrame implements ActionListener {
 					}
 				});
 				adicionaCelula(celula);
-				add(celula);
+				this.add(celula);
 			}
 		}
 
@@ -160,7 +162,7 @@ public class Tabuleiro extends JFrame implements ActionListener {
 
 	public void carregaCelulas() {
 		for (JButton celula : celulas) {
-			celula.setBackground(Color.BLUE);
+			celula.setBackground(this.azulClaro);
 		}
 	}
 
@@ -204,7 +206,7 @@ public class Tabuleiro extends JFrame implements ActionListener {
 					if (!celula.getText().contains("aberta")) {
 						if (celula.getText().contains("mina")) {
 							tm.cancel();
-							emiteSom("explosao");
+							emiteSom("somderrota");
 							abreMinas(true);
 						} else {
 							emiteSom("abertura");
@@ -476,7 +478,7 @@ public class Tabuleiro extends JFrame implements ActionListener {
 			// URL do som que no caso esta no pendrive, mais ainda é uma fase de teste.
 			AudioInputStream audioInputStream;
                     audioInputStream = AudioSystem
-                            .getAudioInputStream(new File(getClass().getResource("/midia/" + nome + ".wav").getPath()));
+                            .getAudioInputStream(new File(getClass().getResource("/midia/" + nome + ".wav").toURI()));
 			Clip clip = AudioSystem.getClip();
 			clip.open(audioInputStream);
 			clip.start();
@@ -628,6 +630,10 @@ public class Tabuleiro extends JFrame implements ActionListener {
 	}
 
 	public void recomecar(ActionEvent e) {
+            this.tempo = 0;
+            this.celulas = null;
+            this.disableEvents(serialVersionUID);
+            this.validate();
             this.dispose();
             MainCampoMinado main = new MainCampoMinado();
             main.executaJogo();
