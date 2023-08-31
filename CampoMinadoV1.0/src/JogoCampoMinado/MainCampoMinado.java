@@ -20,11 +20,7 @@ public class MainCampoMinado {
 		//Instanciação da janela do jogo.
 		Tabuleiro tab = new Tabuleiro();
 		
-<<<<<<< Updated upstream
-		if (nivel == niveis[0]) {
-=======
 		if (nivel.equals(niveis[0])) {
->>>>>>> Stashed changes
 			//Se o nível escolhido for o "iniciante", o tabuleiro será setado com o tamanho de 9x9 
 			//e com 10 minas espalhadas pelo tabuleiro (O método setSize define as dimensões do JFrame).
 			tab.setTam(9);
