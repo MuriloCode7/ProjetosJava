@@ -89,6 +89,8 @@ public class Tabuleiro extends JFrame implements ActionListener {
         getContentPane().setBackground(Color.white);
 
         celulas = new ArrayList<JButton>();
+        tempo = 0;
+        numBandeiras = 0;
     }
 
     /**
@@ -521,11 +523,11 @@ public class Tabuleiro extends JFrame implements ActionListener {
         apAzul.setBounds(145, 40, 50, 50);
 
         quantMinas.setBounds(32, 190, 170, 50);
-        quantBandeiras.setBounds(37, this.getHeight() - 150, 90, 50);
+        quantBandeiras.setBounds(130, this.getHeight() - 150, 60, 50);
         quantBandeiras.setText("" + numBandeiras);
-        cronometro.setBounds(105, this.getHeight() - 150, 100, 50);
+        cronometro.setBounds(20, this.getHeight() - 150, 180, 50);
 
-        ajuda.setBounds(10, this.getHeight() - 90, 180, 50);
+        ajuda.setBounds(0, this.getHeight() - 90, 180, 50);
 
         // Demais configurações dos botões do menu
         ajuda.setIcon(iconAjuda);
