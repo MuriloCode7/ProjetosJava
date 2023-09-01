@@ -4,47 +4,47 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 public class MainCampoMinado {
-    
-	public void executaJogo(){
-		
-            ImageIcon iconJogo = new ImageIcon(getClass().getResource("/midia/iconJogo.png"));
 
+    public void executaJogo() {
 
-		//Declaração da variável para a escolha do nível do jogo.
-		String[] niveis = { "Nível Iniciante: 9x9", "Nível Intermediário: 16x16"};
+        ImageIcon iconJogo = new ImageIcon(getClass().getResource("/midia/iconJogo.png"));
 
-		//Escolha do nível do jogo.
-		String nivel = (String) JOptionPane.showInputDialog(null, "Selecione a dificuldade do jogo: ", "Campo Minado", 3,
-				iconJogo, niveis, null);
+        int numLinhas = 0;
+        int numColunas = 0;
+        do {
+            numLinhas = Integer.parseInt((String) JOptionPane.showInputDialog(null, "Bem-vindo(a) ao campo minado! "
+                    + "\n Quantas linhas você deseja no seu jogo? (Mínimo 9, máximo 22)", "Campo Minado", JOptionPane.QUESTION_MESSAGE, iconJogo, null, null));
+            numColunas = Integer.parseInt((String) JOptionPane.showInputDialog(null, "Bem-vindo(a) ao campo minado! "
+                    + "\n Quantas colunas você deseja no seu jogo? (Mínimo 9, máximo 48)", "Campo Minado", JOptionPane.QUESTION_MESSAGE, iconJogo, null, null));
 
-		//Instanciação da janela do jogo.
-		Tabuleiro tab = new Tabuleiro();
-		
-		if (nivel.equals(niveis[0])) {
-			//Se o nível escolhido for o "iniciante", o tabuleiro será setado com o tamanho de 9x9 
-			//e com 10 minas espalhadas pelo tabuleiro (O método setSize define as dimensões do JFrame).
-			tab.setTam(9);
-			tab.setMinas(10);
-			tab.setBounds(450,150,700, 486);
-		} else {
-			//Se o nível escolhido for o "intermediário", o tabuleiro será setado com o tamanho de 16x16 
-			//e com 40 minas espalhadas pelo tabuleiro (O método setSize define as dimensões do JFrame).
-			tab.setTam(16);
-			tab.setMinas(40);
-			tab.setBounds(350,100,900, 672);
-		} 
+            
+        } while (numLinhas < 9 || numColunas < 9 || numLinhas > 22 || numColunas > 48);
 
-		//Chamada do método que gera as células no tabuleiro.
-		tab.geraCelulas();
-                tab = null;
+        //Instanciação da janela do jogo.
+        Tabuleiro tab = new Tabuleiro();
 
-	}
+        tab.setNumLinhas(numLinhas);
+        tab.setNumColunas(numColunas);
 
-	public static void main(String[] args){
-		
-		//Instanciação da classe executável.
-		MainCampoMinado main = new MainCampoMinado();
-		//Chamada do método que executa o jogo.
-		main.executaJogo();
-	}
+        int quantTotalCelulas = numLinhas * numColunas;
+        Double quantMinas = quantTotalCelulas * 0.15625;
+
+        System.out.println(quantMinas.intValue());
+        tab.setMinas(quantMinas.intValue());
+        int alturaTela = (40 * numLinhas) + 35;
+        int larguraTela = (40 * numColunas) + 2 + 210;
+        tab.setBounds(0, 0, larguraTela, alturaTela);
+
+        //Chamada do método que gera as células no tabuleiro.
+        tab.geraCelulas();
+        tab = null;
+
+    }
+
+    public static void main(String[] args) {
+        //Instanciação da classe executável.
+        MainCampoMinado main = new MainCampoMinado();
+        //Chamada do método que executa o jogo.
+        main.executaJogo();
+    }
 }
