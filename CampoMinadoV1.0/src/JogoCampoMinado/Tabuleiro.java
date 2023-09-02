@@ -1,6 +1,8 @@
 package JogoCampoMinado;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +22,7 @@ import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class Tabuleiro extends JFrame implements ActionListener {
 
@@ -67,7 +70,7 @@ public class Tabuleiro extends JFrame implements ActionListener {
     // jogador(a) no tabuleiro.
     JLabel quantBandeiras = new JLabel();
     JLabel cronometro = new JLabel();
-    JButton ajuda = new JButton("Como jogar");
+    JButton ajuda = new JButton();
     JButton apVermelho = new JButton();
     JButton apVerde = new JButton();
     JButton apAzul = new JButton();
@@ -81,7 +84,7 @@ public class Tabuleiro extends JFrame implements ActionListener {
     public Tabuleiro() {
 
         // Declaração das propriedades do tabuleiro/JFrame
-        setLayout(null);
+        setLayout(new BorderLayout());
         setTitle("Campo Minado");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
@@ -99,7 +102,7 @@ public class Tabuleiro extends JFrame implements ActionListener {
      *
      * @throws InterruptedException
      */
-    public void geraCelulas() {
+    public void geraCelulas(JPanel painel) {
 
         for (int x = 0; x < this.numColunas; x++) {
 
@@ -142,7 +145,7 @@ public class Tabuleiro extends JFrame implements ActionListener {
                                 } else if (celula.getIcon() == bandeira) {
                                     // Coloca a bandeira na célula.
                                     celula.setIcon(iconInterrogacao);
-                                    numBandeiras += 1;
+                                    numBandeiras -= 1;
                                 } else if (celula.getIcon() == iconInterrogacao) {
                                     celula.setIcon(null);
                                 }
@@ -152,12 +155,15 @@ public class Tabuleiro extends JFrame implements ActionListener {
                     }
                 });
                 adicionaCelula(celula);
-                add(celula);
+                painel.add(celula);
             }
         }
 
         carregaCelulas();
-        criaMenu();
+        criaMenu(painel);
+        
+        revalidate();
+        repaint();
     }
 
     public void carregaCelulas() {
@@ -180,6 +186,23 @@ public class Tabuleiro extends JFrame implements ActionListener {
     }
 
     public void click(ActionEvent e) {
+
+        if (tempo == 0) {
+            final long segundo = (1000);
+
+            TimerTask tarefa = new TimerTask() {
+
+                @Override
+                public void run() {
+                    updateTempo();
+                    tempo++;
+                }
+
+            };
+
+            tm.scheduleAtFixedRate(tarefa, 0, segundo);
+        }
+
         for (JButton celula : celulas) {
             if (e.getSource() == celula) {
                 if (celula.getIcon() == null) {
@@ -193,7 +216,9 @@ public class Tabuleiro extends JFrame implements ActionListener {
                         if (celula.getText().contains("mina")) {
                             tm.cancel();
                             emiteSom("explosao");
-                            abreMinas(true);
+                            //abreMinas(true);
+                            celula.setIcon(iconMina);
+                            celula.setBackground(new Color(1.0f, 1.0f, 1.0f, 0f));
                         } else {
                             emiteSom("abertura");
                             abreCelula(celula);
@@ -208,6 +233,7 @@ public class Tabuleiro extends JFrame implements ActionListener {
 
         Random aleatorio = new Random();
 
+        // O jogo pega a primeira celula clicada para não gerar uma mina 
         int xCelula = Integer.parseInt(celulaAberta.getText().substring(0, 2));
         int yCelula = Integer.parseInt(celulaAberta.getText().substring(3, 5));
 
@@ -428,24 +454,33 @@ public class Tabuleiro extends JFrame implements ActionListener {
 
     public void abreMinas(boolean derrota) {
 
+        /*
         for (JButton celula : celulas) {
             if (celula.getText().contains("mina")) {
                 celula.setIcon(iconMina);
                 celula.setBackground(cinza);
             }
         }
-
+         */
         if (derrota) {
             jogarNovamente = JOptionPane.showConfirmDialog(null,
                     "Você perdeu o jogo na " + this.jogadas + "ª jogada. " + "\nDeseja jogar novamente?", "Confirmação",
                     JOptionPane.YES_NO_OPTION, 0, iconExplosao);
         } else {
+            for (JButton celula : celulas) {
+                if (celula.getText().contains("mina")) {
+                    celula.setIcon(iconMina);
+                    celula.setBackground(cinza);
+                }
+            }
+
             int minutos = tempo / 60;
             int segundos = tempo % 60;
             this.jogarNovamente = JOptionPane.showConfirmDialog(null,
                     "Parabéns, você ganhou o jogo!!!" + "\nCom " + this.jogadas + " jogadas! " + "\nTempo: " + minutos
                     + "m" + segundos + "s." + "\n\n Deseja jogar novamente?",
                     "Confirmação", JOptionPane.YES_NO_OPTION, 0, iconTrofeu);
+
         }
 
         this.dispose();
@@ -471,42 +506,30 @@ public class Tabuleiro extends JFrame implements ActionListener {
         }
     }
 
-    public void updateTempo(){
+    public void updateTempo() {
         if (tempo < 60) {
             cronometro.setText(tempo + "s");
         } else {
             cronometro.setText("" + tempo / 60 + "m" + tempo % 60 + "s");
         }
     }
-    
-    public void criaMenu() {
+
+    public void criaMenu(JPanel painel) {
         JButton recomecar = new JButton();
         JLabel quantMinas = new JLabel("Quant. de minas: " + this.minas);
         JLabel aparencia = new JLabel("Mudar aparência:");
 
-        final long segundo = (1000);
-
-        TimerTask tarefa = new TimerTask() {
-
-            @Override
-            public void run() {
-                updateTempo();
-                tempo++;
-            }
-
-        };
-
-        tm.scheduleAtFixedRate(tarefa, 0, segundo);
-
-        add(recomecar);
-        add(quantMinas);
-        add(aparencia);
-        add(apVermelho);
-        add(apVerde);
-        add(apAzul);
-        add(quantBandeiras);
-        add(cronometro);
-        add(ajuda);
+        painel.add(recomecar);
+        painel.add(quantMinas);
+        painel.add(aparencia);
+        painel.add(apVermelho);
+        painel.add(apVerde);
+        painel.add(apAzul);
+        painel.add(quantBandeiras);
+        painel.add(cronometro);
+        painel.add(ajuda);
+        
+        this.add(painel);
         configuraBtnsMenu(recomecar, quantMinas, aparencia, apVermelho, apVerde, apAzul, quantBandeiras, cronometro,
                 ajuda);
     }
@@ -523,17 +546,19 @@ public class Tabuleiro extends JFrame implements ActionListener {
         apAzul.setBounds(145, 40, 50, 50);
 
         quantMinas.setBounds(32, 190, 170, 50);
-        quantBandeiras.setBounds(130, this.getHeight() - 150, 60, 50);
+        quantBandeiras.setBounds(140, this.getHeight() - 150, 60, 50);
         quantBandeiras.setText("" + numBandeiras);
         cronometro.setBounds(20, this.getHeight() - 150, 180, 50);
+        cronometro.setText(tempo + "s");
 
         ajuda.setBounds(0, this.getHeight() - 90, 180, 50);
 
         // Demais configurações dos botões do menu
         ajuda.setIcon(iconAjuda);
-        ajuda.setBackground(Color.white);
+        ajuda.setBackground(new Color(1.0f, 1.0f, 1.0f, 0f));
         ajuda.setBorder(null);
         ajuda.setFocusable(false);
+        ajuda.setText("Como jogar?");
         ajuda.addActionListener(this::exibirAjuda);
 
         apVermelho.setBackground(vermelho);
@@ -550,6 +575,21 @@ public class Tabuleiro extends JFrame implements ActionListener {
         recomecar.setBackground(new Color(255, 255, 255));
         recomecar.setFocusable(false);
         recomecar.addActionListener(this::recomecar);
+        recomecar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Cria um novo painel para substituir o conteúdo atual
+                JPanel novoPainel = new JPanel();
+                novoPainel.setLayout(null);
+                geraCelulas(novoPainel);
+
+                // Remove o conteúdo atual e adiciona o novo painel
+                getContentPane().removeAll();
+                getContentPane().add(novoPainel);
+                revalidate();
+                repaint();
+            }
+        });
 
         // Definição das fontes
         recomecar.setFont(new Font("Calibri", Font.BOLD, 18));
