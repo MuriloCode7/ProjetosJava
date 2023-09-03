@@ -1,14 +1,12 @@
 package JogoCampoMinado;
 
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+//import javax.swing.ImageIcon;
 
 public class MainCampoMinado {
 
     public void executaJogo() {
 
-        ImageIcon iconJogo = new ImageIcon(getClass().getResource("/midia/iconJogo.png"));
+        //ImageIcon iconJogo = new ImageIcon(getClass().getResource("/midia/iconJogo.png"));
 
         final int numLinhas = 16;
         final int numColunas = 16;
@@ -37,17 +35,15 @@ public class MainCampoMinado {
 
         //Instanciação da janela do jogo.
         Tabuleiro tab = new Tabuleiro();
-        JPanel painel = new JPanel();
-        
-        painel.setLayout(null);
+        ConteudoPainel painel = new ConteudoPainel();
 
-        tab.setNumLinhas(numLinhas);
-        tab.setNumColunas(numColunas);
+        painel.setNumLinhas(numLinhas);
+        painel.setNumColunas(numColunas);
 
         int quantTotalCelulas = numLinhas * numColunas;
         Double quantMinas = quantTotalCelulas * 0.15625;
 
-        tab.setMinas(quantMinas.intValue());
+        painel.setQuantMinas(quantMinas.intValue());
         int alturaTela = (40 * numLinhas) + 35;
         int larguraTela = (40 * numColunas) + 4 + 210;
         tab.setBounds(0, 0, larguraTela, alturaTela);

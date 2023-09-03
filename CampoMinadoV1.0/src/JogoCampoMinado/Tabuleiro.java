@@ -26,60 +26,11 @@ import javax.swing.JPanel;
 
 public class Tabuleiro extends JFrame implements ActionListener {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
-    // Declaração dos atributos do tabuleiro
-    private int numLinhas;
-    private int numColunas;
-    private int minas;
-    private int jogadas;
-    private int bandeiras;
-    private int numBandeiras;
-    private int tempo;
-    private ArrayList<JButton> celulas;
-
-    // Declaração das cores que são usadas no jogo.
-    Color azul = new Color(0, 91, 255);
-    Color verde = new Color(0, 220, 0);
-    Color azulClaro = new Color(30, 144, 255);
-    Color azulClaro2 = new Color(30, 144, 254);
-    Color vermelho = new Color(255, 40, 50);
-    Color cinza = new Color(211, 211, 211);
-
-    // Declaração dos ícones que são usadas no jogo.
-    ImageIcon iconMina = new ImageIcon(getClass().getResource("/midia/mina.png"));
-    ImageIcon iconBandeira = new ImageIcon(getClass().getResource("/midia/bandeira2.png"));
-    ImageIcon iconBandeiraAzul = new ImageIcon(getClass().getResource("/midia/bandeiraAzul2.png"));
-    ImageIcon iconInterrogacao = new ImageIcon(getClass().getResource("/midia/interrogacao.png"));
-    ImageIcon iconRelogio = new ImageIcon(getClass().getResource("/midia/relogio.png"));
-    ImageIcon iconUm = new ImageIcon(getClass().getResource("/midia/1.png"));
-    ImageIcon iconDois = new ImageIcon(getClass().getResource("/midia/2.png"));
-    ImageIcon iconTres = new ImageIcon(getClass().getResource("/midia/3.png"));
-    ImageIcon iconQuatro = new ImageIcon(getClass().getResource("/midia/4.png"));
-    ImageIcon iconCinco = new ImageIcon(getClass().getResource("/midia/5.png"));
-    ImageIcon iconSeis = new ImageIcon(getClass().getResource("/midia/6.png"));
-    ImageIcon iconSete = new ImageIcon(getClass().getResource("/midia/7.png"));
-    ImageIcon iconOito = new ImageIcon(getClass().getResource("/midia/8.png"));
-    ImageIcon iconTrofeu = new ImageIcon(getClass().getResource("/midia/trofeu.png"));
-    ImageIcon iconExplosao = new ImageIcon(getClass().getResource("/midia/explosao.png"));
-    ImageIcon iconAjuda = new ImageIcon(getClass().getResource("/midia/iconAjuda.png"));
-
-    // Declaração do campo que informa a quantidade de bandeiras colocadas pelo(a)
-    // jogador(a) no tabuleiro.
-    JLabel quantBandeiras = new JLabel();
-    JLabel cronometro = new JLabel();
-    JButton ajuda = new JButton();
-    JButton apVermelho = new JButton();
-    JButton apVerde = new JButton();
-    JButton apAzul = new JButton();
-
-    Timer tm = new Timer();
-    // Timer tm2 = new Timer();
 
     // Declaração da variável que permite o jogador jogar novamente.
     int jogarNovamente;
+    ConteudoPainel painel;
 
     public Tabuleiro() {
 
@@ -89,11 +40,7 @@ public class Tabuleiro extends JFrame implements ActionListener {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
         setVisible(true);
-        getContentPane().setBackground(Color.white);
-
-        celulas = new ArrayList<JButton>();
-        tempo = 0;
-        numBandeiras = 0;
+        getContentPane().setBackground(Color.WHITE);
     }
 
     /**
@@ -102,11 +49,12 @@ public class Tabuleiro extends JFrame implements ActionListener {
      *
      * @throws InterruptedException
      */
-    public void geraCelulas(JPanel painel) {
+    public void geraCelulas(ConteudoPainel painel) {
 
-        for (int x = 0; x < this.numColunas; x++) {
+        this.painel = painel;
 
-            for (int y = 0; y < this.numLinhas; y++) {
+        for (int x = 0; x < painel.getNumColunas(); x++) {
+            for (int y = 0; y < painel.getNumLinhas(); y++) {
 
                 Celula celula = new Celula();
                 celula.setBounds((x * 40) + 210, y * 40, 40, 40);
@@ -132,21 +80,22 @@ public class Tabuleiro extends JFrame implements ActionListener {
                     public void mouseReleased(java.awt.event.MouseEvent e) {
                         if (e.getButton() == MouseEvent.BUTTON3) {
                             ImageIcon bandeira;
-                            if (celula.getBackground() == vermelho) {
-                                bandeira = iconBandeiraAzul;
+                            if (celula.getBackground() == painel.getVermelho()) {
+                                bandeira = painel.getIconBandeiraAzul();
                             } else {
-                                bandeira = iconBandeira;
+                                bandeira = painel.getIconBandeiraVermelha();
                             }
                             if (!celula.getText().contains("aberta")) {
+                                int numBandeiras = painel.getNumBandeiras();
                                 if (celula.getIcon() == null) {
                                     // Tira a bandeira da célula.
                                     celula.setIcon(bandeira);
-                                    numBandeiras += 1;
+                                    painel.setNumBandeiras(numBandeiras + 1);
                                 } else if (celula.getIcon() == bandeira) {
                                     // Coloca a bandeira na célula.
-                                    celula.setIcon(iconInterrogacao);
-                                    numBandeiras -= 1;
-                                } else if (celula.getIcon() == iconInterrogacao) {
+                                    celula.setIcon(painel.getIconInterrogacao());
+                                    painel.setNumBandeiras(numBandeiras - 1);
+                                } else if (celula.getIcon() == painel.getIconInterrogacao()) {
                                     celula.setIcon(null);
                                 }
                                 updateBandeiras();
@@ -161,66 +110,71 @@ public class Tabuleiro extends JFrame implements ActionListener {
 
         carregaCelulas();
         criaMenu(painel);
-        
+
         revalidate();
         repaint();
     }
 
     public void carregaCelulas() {
-        for (JButton celula : celulas) {
-            celula.setBackground(this.azulClaro);
-        }
-        for (JButton celula : celulas) {
-            celula.setBackground(this.azulClaro2);
+        for (JButton celula : painel.getCelulas()) {
+            celula.setBackground(painel.getAzulClaro());
         }
     }
 
     public void updateBandeiras() {
 
-        if (numBandeiras > minas) {
-            quantBandeiras.setForeground(vermelho);
+        if (painel.getNumBandeiras() > painel.getQuantMinas()) {
+            painel.getLabelQuantBandeiras().setForeground(painel.getVermelho());
         } else {
-            quantBandeiras.setForeground(new Color(0, 0, 0));
+            painel.getLabelQuantBandeiras().setForeground(new Color(0, 0, 0));
         }
-        quantBandeiras.setText("" + numBandeiras);
+        painel.getLabelQuantBandeiras().setText("" + painel.getNumBandeiras());
+    }
+
+    public void iniciarCronometro() {
+        final long segundo = (1000);
+
+        TimerTask tarefa = new TimerTask() {
+
+            @Override
+            public void run() {
+                int tempo = painel.getTempo();
+                painel.setTempo(tempo + 1);
+                updateTempo();
+            }
+
+        };
+
+        painel.getTm().scheduleAtFixedRate(tarefa, 0, segundo);
     }
 
     public void click(ActionEvent e) {
+        
+        System.out.println("Jogada: " + painel.getNumJogadas());
+        
+        painel.setNumJogadas(painel.getNumJogadas() + 1);
 
-        if (tempo == 0) {
-            final long segundo = (1000);
-
-            TimerTask tarefa = new TimerTask() {
-
-                @Override
-                public void run() {
-                    updateTempo();
-                    tempo++;
-                }
-
-            };
-
-            tm.scheduleAtFixedRate(tarefa, 0, segundo);
+        if (painel.getTempo() == 0) {
+            iniciarCronometro();
         }
-
-        for (JButton celula : celulas) {
+        
+        for (JButton celula : painel.getCelulas()) {
             if (e.getSource() == celula) {
                 if (celula.getIcon() == null) {
-                    this.jogadas++;
-                    if (this.jogadas == 1) {
+                    if (painel.getNumJogadas() == 1) {
                         geraMinas(celula);
                         abreCelula(celula);
                     }
 
                     if (!celula.getText().contains("aberta")) {
                         if (celula.getText().contains("mina")) {
-                            tm.cancel();
+                            painel.getTm().cancel();
                             emiteSom("explosao");
                             //abreMinas(true);
-                            celula.setIcon(iconMina);
+                            celula.setIcon(painel.getIconMina());
                             celula.setBackground(new Color(1.0f, 1.0f, 1.0f, 0f));
                         } else {
-                            emiteSom("abertura");
+                            //emiteSom("abertura");
                             abreCelula(celula);
                         }
                     }
@@ -239,12 +193,12 @@ public class Tabuleiro extends JFrame implements ActionListener {
 
         int i = 0;
 
-        while (i < this.minas) {
-            int limiteHorizontal = this.numColunas - 2;
-            int limiteVertical = this.numLinhas - 2;
+        while (i < painel.getQuantMinas()) {
+            int limiteHorizontal = painel.getNumColunas() - 2;
+            int limiteVertical = painel.getNumLinhas() - 2;
             int x = aleatorio.nextInt(limiteHorizontal);
             int y = aleatorio.nextInt(limiteVertical);
-            for (JButton celula : celulas) {
+            for (JButton celula : painel.getCelulas()) {
                 if (x > 0 || y > 0) {
                     if (celula.getText().equals(x + "." + y + " m:X") || celula.getText().equals(x + ".0" + y + " m:X")
                             || celula.getText().equals("0" + x + "." + y + " m:X")
@@ -267,15 +221,15 @@ public class Tabuleiro extends JFrame implements ActionListener {
 
     public void geraVizinhas() {
 
-        for (JButton celula : celulas) {
+        for (JButton celula : painel.getCelulas()) {
             int minas = 0;
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dy = -1; dy <= 1; dy++) {
                     if (dx != 0 || dy != 0) {
                         int x = Integer.parseInt(celula.getText().substring(0, 2)) + dx;
                         int y = Integer.parseInt(celula.getText().substring(3, 5)) + dy;
-                        if (x >= 0 && x < this.numColunas && y >= 0 && y < this.numLinhas) {
-                            for (JButton celulaCheca : celulas) {
+                        if (x >= 0 && x < painel.getNumColunas() && y >= 0 && y < painel.getNumLinhas()) {
+                            for (JButton celulaCheca : painel.getCelulas()) {
                                 int xCheca = Integer.parseInt(celulaCheca.getText().substring(0, 2));
                                 int yCheca = Integer.parseInt(celulaCheca.getText().substring(3, 5));
                                 if (x == xCheca && y == yCheca) {
@@ -302,15 +256,15 @@ public class Tabuleiro extends JFrame implements ActionListener {
 
         if (celulaAberta.getText().substring(8, 9).equals("0")) {
 
-            for (JButton c : celulas) {
+            for (JButton c : painel.getCelulas()) {
                 if (c == celulaAberta) {
 
                     for (int dx = -1; dx <= 1; dx++) {
                         for (int dy = -1; dy <= 1; dy++) {
                             int x = Integer.parseInt(c.getText().substring(0, 2)) + dx;
                             int y = Integer.parseInt(c.getText().substring(3, 5)) + dy;
-                            if (x >= 0 && x < this.numColunas && y >= 0 && y < this.numLinhas) {
-                                for (JButton celulaCheca : celulas) {
+                            if (x >= 0 && x < painel.getNumColunas() && y >= 0 && y < painel.getNumLinhas()) {
+                                for (JButton celulaCheca : painel.getCelulas()) {
                                     int xCheca = Integer.parseInt(celulaCheca.getText().substring(0, 2));
                                     int yCheca = Integer.parseInt(celulaCheca.getText().substring(3, 5));
                                     if (x == xCheca && y == yCheca) {
@@ -343,15 +297,15 @@ public class Tabuleiro extends JFrame implements ActionListener {
 
             confere = 0;
 
-            for (JButton c : celulas) {
+            for (JButton c : painel.getCelulas()) {
 
                 if (!c.getText().contains("aberta")) {
                     for (int dx = -1; dx <= 1; dx++) {
                         for (int dy = -1; dy <= 1; dy++) {
                             int x = Integer.parseInt(c.getText().substring(0, 2)) + dx;
                             int y = Integer.parseInt(c.getText().substring(3, 5)) + dy;
-                            if (x >= 0 && x < this.numColunas && y >= 0 && y < this.numLinhas) {
-                                for (JButton celulaCheca : celulas) {
+                            if (x >= 0 && x < painel.getNumColunas() && y >= 0 && y < painel.getNumLinhas()) {
+                                for (JButton celulaCheca : painel.getCelulas()) {
                                     int xCheca = Integer.parseInt(celulaCheca.getText().substring(0, 2));
                                     int yCheca = Integer.parseInt(celulaCheca.getText().substring(3, 5));
                                     if (x == xCheca && y == yCheca) {
@@ -372,9 +326,9 @@ public class Tabuleiro extends JFrame implements ActionListener {
     }
 
     public void executaAbertura() {
-        for (JButton c : celulas) {
+        for (JButton c : painel.getCelulas()) {
             if (c.getText().contains("aberta")) {
-                c.setBackground(cinza);
+                c.setBackground(painel.getCinza());
                 defineNumero(c);
             }
         }
@@ -383,52 +337,44 @@ public class Tabuleiro extends JFrame implements ActionListener {
 
     public void defineNumero(JButton celula) {
 
-        for (JButton c : celulas) {
+        for (JButton c : painel.getCelulas()) {
             if (c == celula) {
 
                 if (!celula.getText().substring(8, 9).equals("X")) {
                     int quantMinas = Integer.parseInt(celula.getText().substring(8, 9));
 
                     switch (quantMinas) {
-
                         case 0:
                             c.setIcon(null);
                             break;
                         case 1:
-                            c.setBackground(this.cinza);
-                            c.setIcon(iconUm);
+                            c.setIcon(painel.getIconUm());
                             break;
                         case 2:
-                            c.setBackground(this.cinza);
-                            c.setIcon(iconDois);
+                            c.setIcon(painel.getIconDois());
                             break;
                         case 3:
-                            c.setBackground(this.cinza);
-                            c.setIcon(iconTres);
+                            c.setIcon(painel.getIconTres());
                             break;
                         case 4:
-                            c.setBackground(this.cinza);
-                            c.setIcon(iconQuatro);
+                            c.setIcon(painel.getIconQuatro());
                             break;
                         case 5:
-                            c.setBackground(this.cinza);
-                            c.setIcon(iconCinco);
+                            c.setIcon(painel.getIconCinco());
                             break;
                         case 6:
-                            c.setBackground(this.cinza);
-                            c.setIcon(iconSeis);
+                            c.setIcon(painel.getIconSeis());
                             break;
                         case 7:
-                            c.setBackground(this.cinza);
-                            c.setIcon(iconSete);
+                            c.setIcon(painel.getIconSete());
                             break;
                         case 8:
-                            c.setBackground(this.cinza);
-                            c.setIcon(iconOito);
+                            c.setIcon(painel.getIconOito());
                             break;
                         default:
                             break;
                     }
+                    c.setBackground(painel.getCinza());
                 }
             }
         }
@@ -438,14 +384,14 @@ public class Tabuleiro extends JFrame implements ActionListener {
 
         int celulasAbertas = 0;
 
-        for (JButton celula : celulas) {
+        for (JButton celula : painel.getCelulas()) {
             if (celula.getText().contains("aberta")) {
                 celulasAbertas++;
             }
         }
 
-        if (celulasAbertas == this.numColunas * this.numLinhas - this.minas) {
-            tm.cancel();
+        if (celulasAbertas == painel.getNumColunas() * painel.getNumLinhas() - painel.getQuantMinas()) {
+            painel.getTm().cancel();
             emiteSom("vitoria");
             abreMinas(false);
         }
@@ -464,22 +410,22 @@ public class Tabuleiro extends JFrame implements ActionListener {
          */
         if (derrota) {
             jogarNovamente = JOptionPane.showConfirmDialog(null,
-                    "Você perdeu o jogo na " + this.jogadas + "ª jogada. " + "\nDeseja jogar novamente?", "Confirmação",
-                    JOptionPane.YES_NO_OPTION, 0, iconExplosao);
+                    "Você perdeu o jogo na " + painel.getNumJogadas() + "ª jogada. " + "\nDeseja jogar novamente?", "Confirmação",
+                    JOptionPane.YES_NO_OPTION, 0, painel.getIconExplosao());
         } else {
-            for (JButton celula : celulas) {
+            for (JButton celula : painel.getCelulas()) {
                 if (celula.getText().contains("mina")) {
-                    celula.setIcon(iconMina);
-                    celula.setBackground(cinza);
+                    celula.setIcon(painel.getIconMina());
+                    celula.setBackground(painel.getCinza());
                 }
             }
 
-            int minutos = tempo / 60;
-            int segundos = tempo % 60;
+            int minutos = painel.getTempo() / 60;
+            int segundos = painel.getTempo() % 60;
             this.jogarNovamente = JOptionPane.showConfirmDialog(null,
-                    "Parabéns, você ganhou o jogo!!!" + "\nCom " + this.jogadas + " jogadas! " + "\nTempo: " + minutos
+                    "Parabéns, você ganhou o jogo!!!" + "\nCom " + painel.getNumJogadas() + " jogadas! " + "\nTempo: " + minutos
                     + "m" + segundos + "s." + "\n\n Deseja jogar novamente?",
-                    "Confirmação", JOptionPane.YES_NO_OPTION, 0, iconTrofeu);
+                    "Confirmação", JOptionPane.YES_NO_OPTION, 0, painel.getIconTrofeu());
 
         }
 
@@ -507,31 +453,33 @@ public class Tabuleiro extends JFrame implements ActionListener {
     }
 
     public void updateTempo() {
-        if (tempo < 60) {
-            cronometro.setText(tempo + "s");
+        if (painel.getTempo() < 60) {
+            painel.getLabelCronometro().setText(painel.getTempo() + "s");
         } else {
-            cronometro.setText("" + tempo / 60 + "m" + tempo % 60 + "s");
+            painel.getLabelCronometro().setText("" + painel.getTempo() / 60 + "m" + painel.getTempo() % 60 + "s");
         }
     }
 
-    public void criaMenu(JPanel painel) {
+    public void criaMenu(ConteudoPainel painel) {
         JButton recomecar = new JButton();
-        JLabel quantMinas = new JLabel("Quant. de minas: " + this.minas);
-        JLabel aparencia = new JLabel("Mudar aparência:");
+        painel.setLabelQuantMinas(new JLabel("Quant. de minas: " + painel.getQuantMinas()));
+        painel.setLabelAparencia(new JLabel("Mudar aparência:"));
 
         painel.add(recomecar);
-        painel.add(quantMinas);
-        painel.add(aparencia);
-        painel.add(apVermelho);
-        painel.add(apVerde);
-        painel.add(apAzul);
-        painel.add(quantBandeiras);
-        painel.add(cronometro);
-        painel.add(ajuda);
-        
-        this.add(painel);
-        configuraBtnsMenu(recomecar, quantMinas, aparencia, apVermelho, apVerde, apAzul, quantBandeiras, cronometro,
-                ajuda);
+        painel.add(painel.getLabelQuantMinas());
+        painel.add(painel.getLabelAparencia());
+        painel.add(painel.getBtnAparenciaVermelho());
+        painel.add(painel.getBtnAparenciaVerde());
+        painel.add(painel.getBtnAparenciaAzul());
+        painel.add(painel.getLabelQuantBandeiras());
+        painel.add(painel.getLabelCronometro());
+        painel.add(painel.getBtnAjuda());
+
+        add(painel);
+        configuraBtnsMenu(recomecar, painel.getLabelQuantMinas(), painel.getLabelAparencia(),
+                painel.getBtnAparenciaVermelho(), painel.getBtnAparenciaVerde(),
+                painel.getBtnAparenciaAzul(), painel.getLabelQuantBandeiras(),
+                painel.getLabelCronometro(), painel.getBtnAjuda());
     }
 
     public void configuraBtnsMenu(JButton recomecar, JLabel quantMinas, JLabel aparencia, JButton apVermelho,
@@ -547,29 +495,29 @@ public class Tabuleiro extends JFrame implements ActionListener {
 
         quantMinas.setBounds(32, 190, 170, 50);
         quantBandeiras.setBounds(140, this.getHeight() - 150, 60, 50);
-        quantBandeiras.setText("" + numBandeiras);
+        quantBandeiras.setText("" + painel.getNumBandeiras());
         cronometro.setBounds(20, this.getHeight() - 150, 180, 50);
-        cronometro.setText(tempo + "s");
+        cronometro.setText(painel.getTempo() + "s");
 
         ajuda.setBounds(0, this.getHeight() - 90, 180, 50);
 
         // Demais configurações dos botões do menu
-        ajuda.setIcon(iconAjuda);
-        ajuda.setBackground(new Color(1.0f, 1.0f, 1.0f, 0f));
+        ajuda.setIcon(painel.getIconAjuda());
+        ajuda.setBackground(Color.WHITE);
         ajuda.setBorder(null);
         ajuda.setFocusable(false);
         ajuda.setText("Como jogar?");
         ajuda.addActionListener(this::exibirAjuda);
 
-        apVermelho.setBackground(vermelho);
+        apVermelho.setBackground(painel.getVermelho());
         apVermelho.addActionListener(this::mudarAparencia);
-        apVerde.setBackground(verde);
+        apVerde.setBackground(painel.getVerde());
         apVerde.addActionListener(this::mudarAparencia);
-        apAzul.setBackground(azulClaro);
+        apAzul.setBackground(painel.getAzulClaro());
         apAzul.addActionListener(this::mudarAparencia);
 
-        quantBandeiras.setIcon(iconBandeira);
-        cronometro.setIcon(iconRelogio);
+        quantBandeiras.setIcon(painel.getIconBandeiraVermelha());
+        cronometro.setIcon(painel.getIconRelogio());
 
         recomecar.setText("Recomeçar");
         recomecar.setBackground(new Color(255, 255, 255));
@@ -579,7 +527,7 @@ public class Tabuleiro extends JFrame implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Cria um novo painel para substituir o conteúdo atual
-                JPanel novoPainel = new JPanel();
+                ConteudoPainel novoPainel = new ConteudoPainel();
                 novoPainel.setLayout(null);
                 geraCelulas(novoPainel);
 
@@ -618,28 +566,28 @@ public class Tabuleiro extends JFrame implements ActionListener {
 
         Color corEscolhida;
 
-        if (e.getSource() == apVermelho) {
-            corEscolhida = vermelho;
-            quantBandeiras.setIcon(iconBandeiraAzul);
-        } else if (e.getSource() == apVerde) {
-            corEscolhida = verde;
+        if (e.getSource() == painel.getBtnAparenciaVermelho()) {
+            corEscolhida = painel.getVermelho();
+            painel.getLabelQuantBandeiras().setIcon(painel.getIconBandeiraAzul());
+        } else if (e.getSource() == painel.getBtnAparenciaVerde()) {
+            corEscolhida = painel.getVerde();
         } else {
-            corEscolhida = azulClaro;
-            quantBandeiras.setIcon(iconBandeira);
+            corEscolhida = painel.getAzulClaro();
+            painel.getLabelQuantBandeiras().setIcon(painel.getIconBandeiraVermelha());
         }
 
-        for (JButton celula : celulas) {
+        for (JButton celula : painel.getCelulas()) {
             if (!celula.getText().contains("aberta")) {
                 celula.setBackground(corEscolhida);
-                if (corEscolhida == vermelho) {
+                if (corEscolhida == painel.getVermelho()) {
                     if (celula.getIcon() != null) {
-                        celula.setIcon(iconBandeiraAzul);
+                        celula.setIcon(painel.getIconBandeiraAzul());
 
                     }
                 }
-                if (corEscolhida == azulClaro) {
+                if (corEscolhida == painel.getAzulClaro()) {
                     if (celula.getIcon() != null) {
-                        celula.setIcon(iconBandeira);
+                        celula.setIcon(painel.getIconBandeiraVermelha());
                     }
                 }
             }
@@ -657,48 +605,8 @@ public class Tabuleiro extends JFrame implements ActionListener {
 
     }
 
-    public int getNumLinhas() {
-        return numLinhas;
-    }
-
-    public void setNumLinhas(int numLinhas) {
-        this.numLinhas = numLinhas;
-    }
-
-    public int getNumColunas() {
-        return numColunas;
-    }
-
-    public void setNumColunas(int numColunas) {
-        this.numColunas = numColunas;
-    }
-
-    public void setMinas(int minas) {
-        this.minas = minas;
-    }
-
-    public int getMinas() {
-        return minas;
-    }
-
-    public ArrayList<JButton> getCelulas() {
-        return celulas;
-    }
-
-    public void setCelulas(ArrayList<JButton> celulas) {
-        this.celulas = celulas;
-    }
-
     public void adicionaCelula(JButton celula) {
-        this.celulas.add(celula);
-    }
-
-    public int getNumBandeiras() {
-        return numBandeiras;
-    }
-
-    public void setNumBandeiras(int numBandeiras) {
-        this.numBandeiras = numBandeiras;
+        painel.getCelulas().add(celula);
     }
 
 }

@@ -13,7 +13,7 @@ public class Celula extends JButton {
 	ArrayList<JButton> vizinhas;
 	
 	public Celula() {
-		vizinhas = new ArrayList<JButton>();
+		vizinhas = new ArrayList<>();
 	}	
 
 	public ArrayList<JButton> getVizinhas() {
