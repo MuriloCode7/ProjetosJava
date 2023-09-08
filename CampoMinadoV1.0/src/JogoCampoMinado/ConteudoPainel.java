@@ -7,6 +7,7 @@ package JogoCampoMinado;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -26,18 +27,19 @@ public class ConteudoPainel extends JPanel {
     private int bandeiras;
     private int numBandeiras;
     private int tempo;
-    private ArrayList<JButton> celulas;
+    private ArrayList<Celula> celulas;
     
     // Declaração das cores que são usadas no jogo.
     Color azul = new Color(0, 91, 255);
-    Color verde = new Color(0, 220, 0);
-    Color azulClaro = new Color(30, 144, 255);
-    Color azulClaro2 = new Color(30, 144, 254);
-    Color vermelho = new Color(255, 40, 50);
+    Color verde = new Color(76, 175, 80);
+    Color azulClaro = new Color(33, 150, 243);
+    Color vermelho = new Color(244, 67, 54);
     Color cinza = new Color(211, 211, 211);
+    Color corCelulas = azulClaro;
     
     // Declaração dos ícones que são usadas no jogo.
     ImageIcon iconMina = new ImageIcon(getClass().getResource("/midia/mina.png"));
+    ImageIcon iconMinaMenu = new ImageIcon(getClass().getResource("/midia/minaMenu.png"));
     ImageIcon iconBandeiraVermelha = new ImageIcon(getClass().getResource("/midia/bandeira2.png"));
     ImageIcon iconBandeiraAzul = new ImageIcon(getClass().getResource("/midia/bandeiraAzul2.png"));
     ImageIcon iconInterrogacao = new ImageIcon(getClass().getResource("/midia/interrogacao.png"));
@@ -60,24 +62,65 @@ public class ConteudoPainel extends JPanel {
     JLabel labelCronometro;
     JLabel labelQuantMinas;
     JLabel labelAparencia;
+    JLabel labelNumJogo;
     JButton btnAjuda;
+    JLabel labelPenalidadeTempo;
     JButton btnAparenciaVermelho = new JButton();
     JButton btnAparenciaVerde = new JButton();
     JButton btnAparenciaAzul = new JButton();
     
     Timer tm = new Timer();
     
-    public ConteudoPainel(){
+    public ConteudoPainel(int numColunas, int numLinhas){
         setLayout(null);
         celulas = new ArrayList<>();
         labelQuantBandeiras = new JLabel();
         labelCronometro = new JLabel();
+        labelPenalidadeTempo = new JLabel();
         btnAjuda = new JButton();
-        tempo = 0;
         numBandeiras = 0;
-        numJogadas = 0;
+        tempo = 0;
+        quantMinas = 40;
+        this.numColunas = numColunas;
+        this.numLinhas = numLinhas;
+        setBackground(Color.WHITE);
+    }
+    
+    public void iniciarCronometro(int tempoAtual) {
+        final long segundo = (1000);
+
+        TimerTask tarefa = new TimerTask() {
+
+            @Override
+            public void run() {
+                if (tempo < 60) {
+			labelCronometro.setText(tempo + "s");
+		} else {
+			labelCronometro.setText("" + tempo / 60 + "m" + tempo % 60 + "s");
+		}
+                tempo++;
+                
+                if (tempo > tempoAtual + 3) {
+                    labelPenalidadeTempo.setVisible(false);
+                }
+            }
+
+        };
+
+        tm.scheduleAtFixedRate(tarefa, 0, segundo);
     }
 
+    public void adicionaCelulaAlterada(Celula celula) {
+
+        for (Celula c : getCelulas()) {
+            if (c.getCoordX() == celula.getCoordX() && c.getCoordY() == celula.getCoordY()) {
+                int indice = getCelulas().indexOf(c);
+                getCelulas().set(indice, celula);
+            }
+        }
+
+    }
+    
     public int getQuantMinas() {
         return quantMinas;
     }
@@ -118,11 +161,11 @@ public class ConteudoPainel extends JPanel {
         this.tempo = tempo;
     }
 
-    public ArrayList<JButton> getCelulas() {
+    public ArrayList<Celula> getCelulas() {
         return celulas;
     }
 
-    public void setCelulas(ArrayList<JButton> celulas) {
+    public void setCelulas(ArrayList<Celula> celulas) {
         this.celulas = celulas;
     }
 
@@ -148,14 +191,6 @@ public class ConteudoPainel extends JPanel {
 
     public void setAzulClaro(Color azulClaro) {
         this.azulClaro = azulClaro;
-    }
-
-    public Color getAzulClaro2() {
-        return azulClaro2;
-    }
-
-    public void setAzulClaro2(Color azulClaro2) {
-        this.azulClaro2 = azulClaro2;
     }
 
     public Color getVermelho() {
@@ -222,6 +257,24 @@ public class ConteudoPainel extends JPanel {
         this.iconUm = iconUm;
     }
 
+    public ImageIcon getIconMinaMenu() {
+        return iconMinaMenu;
+    }
+
+    public void setIconMinaMenu(ImageIcon iconMinaMenu) {
+        this.iconMinaMenu = iconMinaMenu;
+    }
+
+    public JLabel getLabelPenalidadeTempo() {
+        return labelPenalidadeTempo;
+    }
+
+    public void setLabelPenalidadeTempo(JLabel labelPenalidadeTempo) {
+        this.labelPenalidadeTempo = labelPenalidadeTempo;
+    }
+
+    
+    
     public ImageIcon getIconDois() {
         return iconDois;
     }
@@ -388,5 +441,25 @@ public class ConteudoPainel extends JPanel {
 
     public void setLabelAparencia(JLabel labelAparencia) {
         this.labelAparencia = labelAparencia;
-    }   
+    }
+
+    public JLabel getLabelNumJogo() {
+        return labelNumJogo;
+    }
+
+    public void setLabelNumJogo(JLabel labelNumJogo) {
+        this.labelNumJogo = labelNumJogo;
+    }
+
+    public Color getCorCelulas() {
+        return corCelulas;
+    }
+
+    public void setCorCelulas(Color corCelulas) {
+        this.corCelulas = corCelulas;
+    }
+    
+    
+    
+    
 }
