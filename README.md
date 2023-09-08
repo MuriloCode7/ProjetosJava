@@ -1,7 +1,7 @@
 # ProjetosJava
 Aplicações desenvolvidas em Java, minha principal linguagem de programação: 
 
-<img src="https://github.com/MuriloMagal/Files/blob/main/logoNumbers.png" alt="numbers" width="400px">
+<img src="https://github.com/MuriloMagal/Files/blob/main/Campo%20minado.jpeg" alt="campominado" width="400px">
 
 > Jogo Campo Minado
 - O jogo possui interface gráfica, ícones personalizados de bandeiras e minas.
