@@ -6,26 +6,61 @@ import javax.swing.JButton;
 
 public class Celula extends JButton {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	ArrayList<JButton> vizinhas;
-	
-	public Celula() {
-		vizinhas = new ArrayList<JButton>();
-	}	
+    int coordX;
+    int coordY;
+    int quantMinasVizinhas;
+    boolean mina;
+    boolean aberta;
+    
+    public Celula() {
+    }
 
-	public ArrayList<JButton> getVizinhas() {
-		return vizinhas;
-	}
+    public Celula(boolean aberta, boolean mina, int quantMinasVizinhas){
+        this.aberta = aberta;
+        this.mina = mina;
+        this.quantMinasVizinhas = quantMinasVizinhas;
+    }
+    
+    public int getQuantMinasVizinhas() {
+        return quantMinasVizinhas;
+    }
 
-	public void setVizinhas(ArrayList<JButton> vizinhas) {
-		this.vizinhas = vizinhas;
-	}
-	
-	public void addVizinha(JButton vizinha) {
-		this.vizinhas.add(vizinha);
-	}
+    public void setQuantMinasVizinhas(int quantMinasVizinhas) {
+        this.quantMinasVizinhas = quantMinasVizinhas;
+    }
+
+    public int getCoordX() {
+        return coordX;
+    }
+
+    public void setCoordX(int coordX) {
+        this.coordX = coordX;
+    }
+
+    public int getCoordY() {
+        return coordY;
+    }
+
+    public void setCoordY(int coordY) {
+        this.coordY = coordY;
+    }
+
+    public boolean isMina() {
+        return mina;
+    }
+
+    public void setMina(boolean mina) {
+        this.mina = mina;
+    }
+
+    public boolean isAberta() {
+        return aberta;
+    }
+
+    public void setAberta(boolean aberta) {
+        this.aberta = aberta;
+    }
+    
+    
 
 }
